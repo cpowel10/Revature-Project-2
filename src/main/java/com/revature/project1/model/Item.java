@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Component
 @Entity
+@Embeddable
 @Table(name="item",schema="project1")
 public class Item {
     @Id
@@ -30,5 +31,6 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name="USER_ID")
+    @Column(unique = false)
     private User user;
 }

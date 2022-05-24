@@ -16,6 +16,8 @@ import java.util.List;
 @Table(name="cart",schema="project1")
 public class Cart {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int cartNum;
     private int numberOfItems;
+    private int userId;
 }

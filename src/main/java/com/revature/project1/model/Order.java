@@ -15,9 +15,10 @@ import javax.persistence.*;
 @Table(name="order",schema="project1")
 public class Order {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int orderNumber;
 
-    @ManyToOne(fetch= FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="USER_ID")
     private User user;
 }

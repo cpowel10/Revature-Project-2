@@ -1,16 +1,24 @@
 package com.revature.project1.services;
 
+import com.revature.project1.dao.CartDao;
 import com.revature.project1.dao.ItemDAO;
+import com.revature.project1.dao.OrderDao;
 import com.revature.project1.dao.UserDao;
+import com.revature.project1.model.Cart;
 import com.revature.project1.model.Item;
+import com.revature.project1.model.Order;
 import com.revature.project1.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -22,10 +30,22 @@ public class UserServiceImpl implements UserService{
     @Autowired
     ItemDAO itemDAO;
 
+    @Autowired
+    OrderDao orderDAO;
+
+    @Autowired
+    CartDao cartDAO;
+
     @Override
     public boolean register(User user) {
         if(userDAO.findByUsername(user.getUsername()).isEmpty() && userDAO.findByEmail(user.getEmail()).isEmpty()){
             userDAO.save(user);
+            Order o = new Order();
+            o.setUser(user);
+            orderDAO.save(o);
+            Cart c = new Cart();
+            c.setUserId(user.getUserId());
+            cartDAO.save(c);
             LOGGER.info("Successfully registered user");
             return true;
         }
@@ -60,8 +80,13 @@ public class UserServiceImpl implements UserService{
         String str = "";
         List<User> users = userDAO.findAll(Sort.by("userId"));
         for(User u : users){
-            System.out.println("Inside UserServiceImpl(getUsersAndCarts): "+u.getCartContents());
-            str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains: "+u.getCartContents()+"\n";
+            str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains:\n";
+            int totalPrice=0;
+            for(Item i : u.getCartContents()){
+                str=str+i.getItemName()+" -- $"+i.getPrice()+"\n";
+                totalPrice = totalPrice+i.getPrice();
+            }
+            str=str+"total= $"+totalPrice+"\n--------------------------------\n";
         }
         return str;
     }
@@ -72,6 +97,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public boolean addItemToCart(User user, int itemId) {
         Item item = itemDAO.findById(itemId);
         if(item==null){
@@ -81,7 +107,7 @@ public class UserServiceImpl implements UserService{
             user.getCartContents().add(item);
             System.out.println("Inside UserServiceImpl: "+user.getCartContents());
             item.setQoh(item.getQoh()-1);
-            //userDAO.saveUserCartContents(user.getUserId(),user.getCartContents());
+
             userDAO.save(user);
             itemDAO.save(item);
             return true;

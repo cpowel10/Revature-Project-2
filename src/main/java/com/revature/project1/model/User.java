@@ -37,11 +37,13 @@ public class User {
 
     private String cardNum;
 
-    @OneToMany(fetch= FetchType.LAZY, mappedBy = "user",cascade = CascadeType.ALL)
+    //@OneToMany(fetch= FetchType.LAZY, mappedBy = "user",cascade = CascadeType.ALL)
     @ElementCollection
+    @CollectionTable(name="in_cart", joinColumns = @JoinColumn(name="user_id"))
     private List<Item> cartContents;
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="user", cascade = CascadeType.ALL)
     @ElementCollection
+    @CollectionTable(name="in_cart", joinColumns = @JoinColumn(name="user_id"))
     private List<Order> orders;
 }
