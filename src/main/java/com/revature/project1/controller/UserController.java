@@ -95,6 +95,7 @@ public class UserController {
                         ("Unable to add item to cart",HttpStatus.CONFLICT);
             }
             else{
+                System.out.println("Inside UserController: "+user.getCartContents());
                 responseEntity = new ResponseEntity<String>
                         ("Successfully added item to cart",HttpStatus.OK);
             }

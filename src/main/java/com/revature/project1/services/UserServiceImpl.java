@@ -7,6 +7,7 @@ import com.revature.project1.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,8 +58,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public String getUsersAndCarts() {
         String str = "";
-        List<User> users = userDAO.findAll();
+        List<User> users = userDAO.findAll(Sort.by("userId"));
         for(User u : users){
+            System.out.println("Inside UserServiceImpl(getUsersAndCarts): "+u.getCartContents());
             str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains: "+u.getCartContents()+"\n";
         }
         return str;
@@ -77,9 +79,10 @@ public class UserServiceImpl implements UserService{
         }
         else{
             user.getCartContents().add(item);
+            System.out.println("Inside UserServiceImpl: "+user.getCartContents());
             item.setQoh(item.getQoh()-1);
+            //userDAO.saveUserCartContents(user.getUserId(),user.getCartContents());
             userDAO.save(user);
-            //System.out.println("New cart contents: "+userDAO.getCartById(user.getUserId()));
             itemDAO.save(item);
             return true;
         }
