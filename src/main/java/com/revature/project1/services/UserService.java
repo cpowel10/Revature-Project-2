@@ -7,10 +7,14 @@ import com.revature.project1.model.User;
 import java.util.List;
 
 public interface UserService {
-    public boolean register(User user);
+    public User register(User user);
     public User login(String username, String password);
+    public void logout();
     public boolean deleteAccount(int userId);
     public String getUsersAndCarts();
+    String getSingleUserAndCart(int userId);
     public boolean isUserExists(int userId);
     public boolean addItemToCart(User user,int itemId);
+    User update(User u);
+    User getUser(int userId);
 }

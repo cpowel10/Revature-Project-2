@@ -17,10 +17,10 @@ import javax.persistence.*;
 @Table(name="item",schema="project1")
 public class Item {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int itemId;
 
     @NotNull
-    @Column(unique = true)
     private String itemName;
 
     @NotNull
@@ -31,6 +31,5 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name="USER_ID")
-    @Column(unique = false)
-    private User user;
+    private User user = null;
 }

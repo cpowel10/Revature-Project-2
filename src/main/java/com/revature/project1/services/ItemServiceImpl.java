@@ -23,6 +23,7 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public boolean addItem(Item item) {
         if(checkNumber.checkNegativeInt(item.getQoh(),item.getPrice())){
+            System.out.println("Item default user: "+item.toString());
             itemDAO.save(item);
             return true;
         }
@@ -46,7 +47,12 @@ public class ItemServiceImpl implements ItemService{
         List<Item> instock = itemDAO.getAllInStock();
         String str = "";
         for(Item i : instock){
-            str = str + i.getItemId()+": "+i.getItemName()+"-- price: $"+i.getPrice() + "\n";
+            if(i.getUser() == null){
+                str = str + i.getItemId()+": "+i.getItemName()+"-- price: $"+i.getPrice() + "\n";
+            }
+            else{
+                continue;
+            }
         }
 
         return str;

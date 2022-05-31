@@ -1,13 +1,17 @@
 package com.revature.project1.controller;
 
+import com.revature.project1.annotations.Authorized;
+import com.revature.project1.model.Cart;
+import com.revature.project1.model.Role;
 import com.revature.project1.model.User;
+import com.revature.project1.services.AuthorizationService;
+import com.revature.project1.services.CartService;
 import com.revature.project1.services.ItemService;
 import com.revature.project1.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,77 +23,90 @@ public class UserController {
     User user;
 
     @Autowired
+    Cart cart;
+
+    @Autowired
     UserService userService;
 
     @Autowired
     ItemService itemService;
 
+    @Autowired
+    CartService cartService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
+
     boolean result;
 
     @PostMapping("/register") //localhost:8088/register
     public ResponseEntity<String> register(@RequestBody User user){
-        ResponseEntity responseEntity = null;
-
+        if(user == null){
+            return new ResponseEntity<String>("User is null",HttpStatus.NO_CONTENT);
+        }
         if(userService.isUserExists(user.getUserId())){
-            responseEntity = new ResponseEntity<String>
+//            responseEntity = new ResponseEntity<String>
+//                    ("Cannot save because user with user id : "
+//                            + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
+            return new ResponseEntity<String>
                     ("Cannot save because user with user id : "
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
         }
         else{
-            result = userService.register(user);
-            if(result){
-                responseEntity = new ResponseEntity<String>
-                        ("Successfully registered user: "+user.getUsername(),HttpStatus.OK);
-            }
-            else{
-                responseEntity = new ResponseEntity<String>
-                        ("Failed to save user because user with username: "+user.getUsername()
-                                +" or email: "+user.getEmail()+" already exists",HttpStatus.CONFLICT);
-            }
+            return ResponseEntity.accepted().body("Successfully registered user: "
+                    +userService.register(user).toString());
         }
-
-        return responseEntity;
     }
 
-    @GetMapping("/login/{user}/{pass}") //localhost:8088/login/user/pass
+    @PutMapping("/update") //localhost:8088/update
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
+    public ResponseEntity<String> updateUserInfo(@RequestBody User user){
+        authorizationService.guardByUserId(user.getUserId());
+
+        User result = userService.update(user);
+        return ResponseEntity.accepted().body("Successfully updated user: "+result.toString());
+    }
+
+    @PostMapping("/login/{user}/{pass}") //localhost:8088/login/user/pass
     public ResponseEntity<String> login(@PathVariable("user") String username, @PathVariable("pass") String password){
-        ResponseEntity responseEntity = null;
         User u = userService.login(username,password);
-        if(u==null){
-            responseEntity = new ResponseEntity("Invalid username or password",HttpStatus.NOT_ACCEPTABLE);
-        }
-        else{
-            responseEntity = new ResponseEntity("Welcome "+u.getFirstName()+" "+u.getLastName(),HttpStatus.OK);
-        }
-        return responseEntity;
+        return new ResponseEntity<String>("Welcome "+u.getFirstName()+" "+u.getLastName(),HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(){
+        userService.logout();
+        return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/getusersandcarts")  //localhost:8088/getusersandcarts
+    @Authorized(allowedRoles = {Role.ADMIN})
     public ResponseEntity<String> getUsersAndCarts(){
-        ResponseEntity<String> responseEntity = null;
-        String userCartString = userService.getUsersAndCarts();
-        if(userCartString==""){
-            responseEntity = new ResponseEntity<String>(
-                    "Something went wrong. Please try again later.",HttpStatus.CONFLICT);
-        }
-        else{
-            responseEntity = new ResponseEntity<String>(userCartString,HttpStatus.OK);
-        }
-        return responseEntity;
+        //String userCartString = userService.getUsersAndCarts();
+        return ResponseEntity.ok(userService.getUsersAndCarts());
     }
 
-    @PutMapping("/addproducttocart/{user}/{pass}/{itemid}") //localhost:8088/addproducttocart/username/password/itemId
-    public ResponseEntity<String> addProductToCart(@PathVariable("user") String username,
-                                                   @PathVariable("pass") String password,
-                                                   @PathVariable("itemid") int itemId ){
+    @GetMapping("/getmycart/{userid}")  // localhost:8088/getmycart/{userid}
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
+    public ResponseEntity<String> getMyCart(@PathVariable("userid") int userId){
+        authorizationService.guardByUserId(userId);
+
+        return ResponseEntity.ok(userService.getSingleUserAndCart(userId));
+    }
+
+    @PutMapping("/addproducttocart/{userid}/{itemid}") //localhost:8088/addproducttocart/userid/itemId
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
+    public ResponseEntity<String> addProductToCart(@PathVariable("userid") int userId,@PathVariable("itemid") int itemId ){
+        authorizationService.guardByUserId(userId);
         ResponseEntity<String> responseEntity = null;
-        user = userService.login(username,password);
+        user = userService.getUser(userId);
         if(user==null){
             responseEntity = new ResponseEntity<String>
                     ("Invalid username or password. Try again",HttpStatus.NOT_ACCEPTABLE);
         }
         else{
             result = userService.addItemToCart(user,itemId);
+            System.out.println("Cart Contents after adding: "+user.getCartContents());
             if(!result){
                 responseEntity = new ResponseEntity<String>
                         ("Unable to add item to cart",HttpStatus.CONFLICT);
@@ -105,7 +122,9 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteuser/{userid}") //localhost:8088/deleteuser/userid
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> deleteUser(@PathVariable("userid") int userId){
+        authorizationService.guardByUserId(userId);
         ResponseEntity<String> responseEntity = null;
         if(userService.isUserExists(userId)){
             result = userService.deleteAccount(userId);
@@ -126,12 +145,11 @@ public class UserController {
         ResponseEntity<String> responseEntity = null;
         String items = itemService.getAllInstockItems();
         if(items==""){
-            responseEntity = new ResponseEntity<String>
+            return new ResponseEntity<String>
                     ("No items instock. Please come back later",HttpStatus.NO_CONTENT);
         }
         else{
-            responseEntity = new ResponseEntity<String>(items,HttpStatus.OK);
+            return new ResponseEntity<String>(items,HttpStatus.OK);
         }
-        return responseEntity;
     }
 }

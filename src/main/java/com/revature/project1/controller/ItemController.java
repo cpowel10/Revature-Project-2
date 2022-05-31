@@ -1,6 +1,8 @@
 package com.revature.project1.controller;
 
+import com.revature.project1.annotations.Authorized;
 import com.revature.project1.model.Item;
+import com.revature.project1.model.Role;
 import com.revature.project1.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ public class ItemController {
     boolean result;
 
     @PostMapping("/additem") //localhost:8088/additem
+    @Authorized(allowedRoles = {Role.ADMIN})
     public ResponseEntity<String> addItem(@RequestBody Item item) {
         ResponseEntity<String> responseEntity = null;
 

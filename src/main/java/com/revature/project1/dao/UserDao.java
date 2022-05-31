@@ -8,12 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDao extends JpaRepository<User,Integer> {
-    public List<User> findByUsername(String username);
-    public List<User> findByUsernameAndPassword(String username, String password);
-    public List<User> findByEmail(String email);
-    public List<User> findById(int userId);
+    public User findByUsername(String username);
+    public Optional<User> findByUsernameAndPassword(String username, String password);
+    public User findById(int userId);
 
 //    @Query("update User u set u.cartContents =:items where u.userId =:userid")
 //    public void saveUserCartContents(@Param("userid") int userId, @Param("items") List<Item> items);
