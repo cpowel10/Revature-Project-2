@@ -98,20 +98,16 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean deleteAccount(int userId) {
         User u = userDAO.findById(userId);
-        List<Item> items = u.getCartContents();
-        if(items.isEmpty()){
-            userDAO.deleteById(userId);
-            return true;
-        }
-        else{
+        List<Item> items = new ArrayList<>(u.getCartContents());
+        if(!items.isEmpty()){
             for(Item i : items){
                 i.setUser(null);
                 i.setQoh(i.getQoh()+1);
-                items.remove(i);
             }
-            userDAO.deleteById(userId);
-            return true;
         }
+        userDAO.deleteById(userId);
+        return true;
+
     }
 
     @Override
@@ -119,13 +115,14 @@ public class UserServiceImpl implements UserService{
         String str = "";
         List<User> users = userDAO.findAll(Sort.by("userId"));
         for(User u : users){
+            Order o = orderDAO.getOrderFromUserId(u.getUserId());
             str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains:\n";
-            int totalPrice=0;
+            //int totalPrice=0;
             for(Item i : u.getCartContents()){
                 str=str+i.getItemName()+" -- $"+i.getPrice()+"\n";
-                totalPrice = totalPrice+i.getPrice();
+                //totalPrice = totalPrice+i.getPrice();
             }
-            str=str+"total= $"+totalPrice+"\n--------------------------------\n";
+            str=str+"total= $"+o.getTotalPrice()+"\n--------------------------------\n";
         }
         return str;
     }
@@ -133,13 +130,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public String getSingleUserAndCart(int userId){
         User user = userDAO.findById(userId);
+        Order o = orderDAO.getOrderFromUserId(userId);
         String str = user.getFirstName()+" "+user.getLastName()+"'s ("+user.getUsername()+") cart contains:\n";
-        int totalPrice=0;
+        //int totalPrice=0;
         for(Item i : user.getCartContents()){
             str=str+i.getItemName()+" -- $"+i.getPrice()+"\n";
-            totalPrice = totalPrice+i.getPrice();
+            //totalPrice = totalPrice+i.getPrice();
         }
-        str=str+"total= $"+totalPrice+"\n--------------------------------\n";
+        str=str+"total= $"+o.getTotalPrice()+"\n--------------------------------\n";
         return str;
     }
 

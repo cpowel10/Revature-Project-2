@@ -40,7 +40,7 @@ public class ItemController {
         return responseEntity;
     }
 
-    @PostMapping("/deleteitem/{itemid}") //localhost:8088/deleteitem/1
+    @DeleteMapping("/deleteitem/{itemid}") //localhost:8088/deleteitem/1
     @Authorized(allowedRoles = {Role.ADMIN})
     public ResponseEntity<String> deleteItem(@PathVariable("itemid") int itemId){
         ResponseEntity<String> responseEntity = null;
