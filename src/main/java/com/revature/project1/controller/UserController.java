@@ -152,4 +152,59 @@ public class UserController {
             return new ResponseEntity<String>(items,HttpStatus.OK);
         }
     }
+
+    @PutMapping("/checkout/{userid}") //localhost:8088/checkout/{userid}
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
+    public ResponseEntity<String> checkout(@PathVariable("userid") int userId){
+        authorizationService.guardByUserId(userId);
+        ResponseEntity<String> responseEntity = null;
+        if(userService.isUserExists(userId)){
+            int total = userService.checkout(userId);
+            if(total>0){
+                responseEntity = new ResponseEntity<String>
+                        ("Transaction complete.\n" +
+                                "Your total today was $"+total+
+                                "\nThank you for shopping with us today. Good Bye."
+                                ,HttpStatus.OK);
+            }
+            else if(total == 0){
+                responseEntity = new ResponseEntity<String>
+                        ("Nothing is in your cart",HttpStatus.NO_CONTENT);
+            }
+            else{ //total=-1
+                responseEntity = new ResponseEntity<String>
+                        ("Unable to process transaction because you do not " +
+                                "have a credit card on our account"
+                                ,HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        else{
+            responseEntity = new ResponseEntity<String>
+                    ("Unable to process transaction because User with user id: "
+                            +userId+" does not exist"
+                            ,HttpStatus.NO_CONTENT);
+        }
+
+        return responseEntity;
+    }
+
+    @PutMapping("/emptycart/{userid}") //localhost:8088/emptycart/{userid}
+    @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
+    public ResponseEntity<String> emptyCart(@PathVariable("userid") int userId){
+        authorizationService.guardByUserId(userId);
+        ResponseEntity<String> responseEntity = null;
+        if(userService.isUserExists(userId)){
+            result= userService.emptyCart(userId);
+            responseEntity = new ResponseEntity<String>
+                    ("Cart successfully emptied"
+                            ,HttpStatus.OK);
+        }
+        else{
+            responseEntity = new ResponseEntity<String>
+                    ("Unable to process transaction because User with user id: "
+                            +userId+" does not exist"
+                            ,HttpStatus.NO_CONTENT);
+        }
+        return responseEntity;
+    }
 }

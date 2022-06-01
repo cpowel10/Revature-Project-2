@@ -17,7 +17,6 @@ import java.util.List;
 @Table(name="user",schema="project1")
 public class User {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="USER_ID")
     private int userId;
 
@@ -37,15 +36,9 @@ public class User {
     @NotNull
     private Role role;
 
-    //@OneToMany(fetch= FetchType.LAZY, mappedBy = "user",cascade = CascadeType.ALL)
     @ElementCollection
     @CollectionTable(name="CartContents", joinColumns = @JoinColumn(name="user_id"))
     private List<Item> cartContents = new ArrayList<Item>();
-
-//    @OneToMany(fetch=FetchType.LAZY, mappedBy="user", cascade = CascadeType.ALL)
-//    @ElementCollection
-//    @CollectionTable(name="orders", joinColumns = @JoinColumn(name="user_id"))
-//    private List<Order> orders = new ArrayList<Order>();
 
     @Override
     public String toString() {

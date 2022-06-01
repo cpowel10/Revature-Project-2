@@ -103,6 +103,7 @@ public class UserServiceImpl implements UserService{
             for(Item i : items){
                 i.setUser(null);
                 i.setQoh(i.getQoh()+1);
+                itemDAO.save(i);
             }
         }
         userDAO.deleteById(userId);
@@ -117,10 +118,8 @@ public class UserServiceImpl implements UserService{
         for(User u : users){
             Order o = orderDAO.getOrderFromUserId(u.getUserId());
             str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains:\n";
-            //int totalPrice=0;
             for(Item i : u.getCartContents()){
                 str=str+i.getItemName()+" -- $"+i.getPrice()+"\n";
-                //totalPrice = totalPrice+i.getPrice();
             }
             str=str+"total= $"+o.getTotalPrice()+"\n--------------------------------\n";
         }
@@ -132,10 +131,8 @@ public class UserServiceImpl implements UserService{
         User user = userDAO.findById(userId);
         Order o = orderDAO.getOrderFromUserId(userId);
         String str = user.getFirstName()+" "+user.getLastName()+"'s ("+user.getUsername()+") cart contains:\n";
-        //int totalPrice=0;
         for(Item i : user.getCartContents()){
             str=str+i.getItemName()+" -- $"+i.getPrice()+"\n";
-            //totalPrice = totalPrice+i.getPrice();
         }
         str=str+"total= $"+o.getTotalPrice()+"\n--------------------------------\n";
         return str;
@@ -172,5 +169,53 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getUser(int userId){
         return userDAO.findById(userId);
+    }
+
+    @Override
+    public int checkout(int userId){
+        User u = userDAO.findById(userId);
+        if(u.getCardNum() == null){
+            return -1;
+        }
+        if(u.getCartContents().isEmpty()){
+            return 0;
+        }
+        Cart c = cartDAO.getCartFromUserId(userId);
+        Order o = orderDAO.getOrderFromUserId(userId);
+        int total = o.getTotalPrice();
+        List<Item> items = new ArrayList<>(u.getCartContents());
+        for(Item i : items){
+            u.getCartContents().remove(i);
+            itemDAO.deleteById(i.getItemId());
+        }
+        c.setNumItemsInCart(0);
+        o.setTotalPrice(0);
+        userDAO.save(u);
+        cartDAO.save(c);
+        orderDAO.save(o);
+        return total;
+    }
+
+    @Override
+    public boolean emptyCart(int userId) {
+        User u = userDAO.findById(userId);
+        if(u.getCartContents().isEmpty()){
+            return true;
+        }
+        Cart c = cartDAO.getCartFromUserId(userId);
+        Order o = orderDAO.getOrderFromUserId(userId);
+        List<Item> items = new ArrayList<>(u.getCartContents());
+        for(Item i : items){
+            u.getCartContents().remove(i);
+            i.setUser(null);
+            i.setQoh(i.getQoh()+1);
+            itemDAO.save(i);
+        }
+        c.setNumItemsInCart(0);
+        o.setTotalPrice(0);
+        userDAO.save(u);
+        cartDAO.save(c);
+        orderDAO.save(o);
+        return true;
     }
 }

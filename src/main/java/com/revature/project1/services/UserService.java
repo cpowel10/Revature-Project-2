@@ -15,6 +15,8 @@ public interface UserService {
     String getSingleUserAndCart(int userId);
     public boolean isUserExists(int userId);
     public boolean addItemToCart(User user,int itemId);
-    User update(User u);
-    User getUser(int userId);
+    public User update(User u);
+    public User getUser(int userId);
+    public int checkout(int userId);
+    public boolean emptyCart(int userId);
 }
