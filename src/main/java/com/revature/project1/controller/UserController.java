@@ -17,13 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
     @Autowired()
     User user;
-
-    @Autowired
-    Cart cart;
 
     @Autowired
     UserService userService;
@@ -31,8 +26,6 @@ public class UserController {
     @Autowired
     ItemService itemService;
 
-    @Autowired
-    CartService cartService;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -45,9 +38,6 @@ public class UserController {
             return new ResponseEntity<String>("User is null",HttpStatus.NO_CONTENT);
         }
         if(userService.isUserExists(user.getUserId())){
-//            responseEntity = new ResponseEntity<String>
-//                    ("Cannot save because user with user id : "
-//                            + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
             return new ResponseEntity<String>
                     ("Cannot save because user with user id : "
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
@@ -82,7 +72,6 @@ public class UserController {
     @GetMapping("/getusersandcarts")  //localhost:8088/getusersandcarts
     @Authorized(allowedRoles = {Role.ADMIN})
     public ResponseEntity<String> getUsersAndCarts(){
-        //String userCartString = userService.getUsersAndCarts();
         return ResponseEntity.ok(userService.getUsersAndCarts());
     }
 
