@@ -97,8 +97,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean deleteAccount(int userId) {
-        userDAO.deleteById(userId);
-        return true;
+        User u = userDAO.findById(userId);
+        List<Item> items = u.getCartContents();
+        if(items.isEmpty()){
+            userDAO.deleteById(userId);
+            return true;
+        }
+        else{
+            for(Item i : items){
+                i.setUser(null);
+                i.setQoh(i.getQoh()+1);
+                items.remove(i);
+            }
+            userDAO.deleteById(userId);
+            return true;
+        }
     }
 
     @Override
@@ -106,7 +119,6 @@ public class UserServiceImpl implements UserService{
         String str = "";
         List<User> users = userDAO.findAll(Sort.by("userId"));
         for(User u : users){
-            //Order order = orderDAO.getOrderFromUserId(u.getUserId());
             str=str + u.getFirstName()+" "+u.getLastName()+"'s ("+u.getUsername()+") cart contains:\n";
             int totalPrice=0;
             for(Item i : u.getCartContents()){
@@ -114,8 +126,6 @@ public class UserServiceImpl implements UserService{
                 totalPrice = totalPrice+i.getPrice();
             }
             str=str+"total= $"+totalPrice+"\n--------------------------------\n";
-            //str=str+"total Price: $"+order.getTotalPrice()
-            //        +"\n--------------------------------\n";
         }
         return str;
     }
@@ -123,8 +133,6 @@ public class UserServiceImpl implements UserService{
     @Override
     public String getSingleUserAndCart(int userId){
         User user = userDAO.findById(userId);
-        //Order order = orderDAO.getOrderFromUserId(userId);
-//        Cart cart = cartDAO.getCartFromUserId(user.getUserId());
         String str = user.getFirstName()+" "+user.getLastName()+"'s ("+user.getUsername()+") cart contains:\n";
         int totalPrice=0;
         for(Item i : user.getCartContents()){
@@ -132,8 +140,6 @@ public class UserServiceImpl implements UserService{
             totalPrice = totalPrice+i.getPrice();
         }
         str=str+"total= $"+totalPrice+"\n--------------------------------\n";
-//        str=str+"total Price: $"+order.getTotalPrice()
-//                +"\n--------------------------------\n";
         return str;
     }
 
@@ -151,22 +157,16 @@ public class UserServiceImpl implements UserService{
             return false;
         }
         else{
-            System.out.println("Cart Contents before add: "+user.getCartContents());
             user.getCartContents().add(item);
-            System.out.println("Cart Contents after add: "+user.getCartContents());
-            System.out.println("Item info before set: "+item.toString());
             item.setQoh(item.getQoh()-1);
             item.setUser(user);
-            System.out.println("Item info after set: "+item.toString());
             cart.setNumItemsInCart(cart.getNumItemsInCart()+1);
             Order order = orderDAO.getOrderFromUserId(user.getUserId());
             order.setTotalPrice(order.getTotalPrice()+item.getPrice());
-            System.out.println("Cart Contents before save: "+user.getCartContents());
             userDAO.save(user);
             itemDAO.save(item);
             cartDAO.save(cart);
             orderDAO.save(order);
-            System.out.println("Cart Contents after save: "+user.getCartContents());
             return true;
         }
     }

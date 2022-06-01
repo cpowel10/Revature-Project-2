@@ -2,6 +2,7 @@ package com.revature.project1.services;
 
 import com.revature.project1.dao.ItemDAO;
 import com.revature.project1.model.Item;
+import com.revature.project1.model.User;
 import com.revature.project1.utilities.CheckNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +35,25 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public boolean deleteItem(int itemId) {
-        return false;
+        Item i = itemDAO.findById(itemId);
+        if(i.getUser() != null){
+            User u = i.getUser();
+            u.getCartContents().remove(i);
+        }
+        itemDAO.deleteById(itemId);
+        return true;
     }
 
     @Override
     public boolean updateItem(Item item) {
-        return false;
+        if(checkNumber.checkNegativeInt(item.getQoh(),item.getPrice())){
+            System.out.println("Item default user: "+item.toString());
+            itemDAO.save(item);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     @Override
