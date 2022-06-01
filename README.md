@@ -49,6 +49,20 @@ cart, and add item to their cart if they are logged in.
 9. **Get All Items Instock:** _localhost:8088/getitemsinstock_
     * Does not require input
     * GET Mapping
+10. **Checkout:** _localhost:8088/checkout/{userid}_
+    * Requires 1 Path variable
+      * userId
+    * PUT Mapping
+    * Will delete the item from table after checkout
+    * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
+       * Must be signed in as user being access
+11. **Empty Cart** _localhost:8088/emptycart/{userid}_
+    * Requires 1 Path variable
+      * userId
+    * PUT Mapping
+    * Will not delete the item from table after checkout
+    * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
+      * Must be signed in as user being access
 ---
 ### Item Controller:
 1. **Add Item** _localhost:8088/additem_
