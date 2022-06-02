@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

@@ -14,9 +14,4 @@ public interface UserDao extends JpaRepository<User,Integer> {
     public User findByUsername(String username);
     public Optional<User> findByUsernameAndPassword(String username, String password);
     public User findById(int userId);
-
-//    @Query("update User u set u.cartContents =:items where u.userId =:userid")
-//    public void saveUserCartContents(@Param("userid") int userId, @Param("items") List<Item> items);
-//    @Query("select u from User u")
-//    public List<Item> getCartById(int userId);
 }

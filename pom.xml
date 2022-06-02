@@ -89,6 +89,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>project-one</finalName>
 	</build>
 
 </project>

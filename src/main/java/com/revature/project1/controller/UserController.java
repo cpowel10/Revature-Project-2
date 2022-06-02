@@ -1,11 +1,9 @@
 package com.revature.project1.controller;
 
 import com.revature.project1.annotations.Authorized;
-import com.revature.project1.model.Cart;
 import com.revature.project1.model.Role;
 import com.revature.project1.model.User;
 import com.revature.project1.services.AuthorizationService;
-import com.revature.project1.services.CartService;
 import com.revature.project1.services.ItemService;
 import com.revature.project1.services.UserService;
 import org.slf4j.Logger;
@@ -15,8 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 public class UserController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     @Autowired()
     User user;
 
@@ -35,14 +37,17 @@ public class UserController {
     @PostMapping("/register") //localhost:8088/register
     public ResponseEntity<String> register(@RequestBody User user){
         if(user == null){
-            return new ResponseEntity<String>("User is null",HttpStatus.NO_CONTENT);
+            LOGGER.error("User given is null");
+            return new ResponseEntity<>("User is null", HttpStatus.NO_CONTENT);
         }
         if(userService.isUserExists(user.getUserId())){
-            return new ResponseEntity<String>
+            LOGGER.warn("Given user already exists");
+            return new ResponseEntity<>
                     ("Cannot save because user with user id : "
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
         }
         else{
+            LOGGER.info("Successfully inserted "+user+" into User table");
             return ResponseEntity.accepted().body("Successfully registered user: "
                     +userService.register(user).toString());
         }
@@ -52,20 +57,22 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> updateUserInfo(@RequestBody User user){
         authorizationService.guardByUserId(user.getUserId());
-
         User result = userService.update(user);
+        LOGGER.info("Successfully updated "+user);
         return ResponseEntity.accepted().body("Successfully updated user: "+result.toString());
     }
 
     @PostMapping("/login/{user}/{pass}") //localhost:8088/login/user/pass
     public ResponseEntity<String> login(@PathVariable("user") String username, @PathVariable("pass") String password){
         User u = userService.login(username,password);
-        return new ResponseEntity<String>("Welcome "+u.getFirstName()+" "+u.getLastName(),HttpStatus.OK);
+        LOGGER.info("Successfully logged in as "+user);
+        return new ResponseEntity<>("Welcome " + u.getFirstName() + " " + u.getLastName(), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(){
         userService.logout();
+        LOGGER.info("Successfully logged out.");
         return ResponseEntity.accepted().build();
     }
 
@@ -87,23 +94,25 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> addProductToCart(@PathVariable("userid") int userId,@PathVariable("itemid") int itemId ){
         authorizationService.guardByUserId(userId);
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<String> responseEntity;
         user = userService.getUser(userId);
         if(user==null){
-            responseEntity = new ResponseEntity<String>
-                    ("Invalid username or password. Try again",HttpStatus.NOT_ACCEPTABLE);
+            LOGGER.error("Invalid username or password provided");
+            responseEntity = new ResponseEntity<>
+                    ("Invalid username or password. Try again", HttpStatus.NOT_ACCEPTABLE);
         }
         else{
             result = userService.addItemToCart(user,itemId);
-            System.out.println("Cart Contents after adding: "+user.getCartContents());
+
             if(!result){
-                responseEntity = new ResponseEntity<String>
-                        ("Unable to add item to cart",HttpStatus.CONFLICT);
+                LOGGER.warn("Unable to add item to cart");
+                responseEntity = new ResponseEntity<>
+                        ("Unable to add item to cart", HttpStatus.CONFLICT);
             }
             else{
-                System.out.println("Inside UserController: "+user.getCartContents());
-                responseEntity = new ResponseEntity<String>
-                        ("Successfully added item to cart",HttpStatus.OK);
+                LOGGER.info("Successfully added item to cart");
+                responseEntity = new ResponseEntity<>
+                        ("Successfully added item to cart", HttpStatus.OK);
             }
         }
 
@@ -114,16 +123,18 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> deleteUser(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<String> responseEntity;
         if(userService.isUserExists(userId)){
             result = userService.deleteAccount(userId);
-            responseEntity = new ResponseEntity<String>
-                    ("Successfully deleted user",HttpStatus.OK);
+            LOGGER.info("Successfully deleted user with userId: "+userId);
+            responseEntity = new ResponseEntity<>
+                    ("Successfully deleted user", HttpStatus.OK);
         }
         else{
-            responseEntity = new ResponseEntity<String>
-                    ("Unable to delete user because user id: "+userId+" is invalid"
-                            ,HttpStatus.NOT_ACCEPTABLE);
+            LOGGER.error("Unable to delete user");
+            responseEntity = new ResponseEntity<>
+                    ("Unable to delete user because user id: " + userId + " is invalid"
+                            , HttpStatus.NOT_ACCEPTABLE);
         }
 
         return responseEntity;
@@ -131,14 +142,15 @@ public class UserController {
 
     @GetMapping("/getitemsinstock") //localhost:8088/getitemsinstock
     public ResponseEntity<String> getItemsInStock(){
-        ResponseEntity<String> responseEntity = null;
         String items = itemService.getAllInstockItems();
-        if(items==""){
-            return new ResponseEntity<String>
-                    ("No items instock. Please come back later",HttpStatus.NO_CONTENT);
+        if(Objects.equals(items, "")){
+            LOGGER.warn("Item table is empty");
+            return new ResponseEntity<>
+                    ("No items instock. Please come back later", HttpStatus.NO_CONTENT);
         }
         else{
-            return new ResponseEntity<String>(items,HttpStatus.OK);
+            LOGGER.info("Fetching all instock items");
+            return new ResponseEntity<>(items, HttpStatus.OK);
         }
     }
 
@@ -146,32 +158,36 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> checkout(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<String> responseEntity;
         if(userService.isUserExists(userId)){
             int total = userService.checkout(userId);
             if(total>0){
-                responseEntity = new ResponseEntity<String>
+                LOGGER.info("Transaction completed");
+                responseEntity = new ResponseEntity<>
                         ("Transaction complete.\n" +
-                                "Your total today was $"+total+
+                                "Your total today was $" + total +
                                 "\nThank you for shopping with us today. Good Bye."
-                                ,HttpStatus.OK);
+                                , HttpStatus.OK);
             }
             else if(total == 0){
-                responseEntity = new ResponseEntity<String>
-                        ("Nothing is in your cart",HttpStatus.NO_CONTENT);
+                LOGGER.warn("Nothing currently in user's cart");
+                responseEntity = new ResponseEntity<>
+                        ("Nothing is in your cart", HttpStatus.NO_CONTENT);
             }
             else{ //total=-1
-                responseEntity = new ResponseEntity<String>
+                LOGGER.warn("No credit card on account to process transaction");
+                responseEntity = new ResponseEntity<>
                         ("Unable to process transaction because you do not " +
                                 "have a credit card on our account"
-                                ,HttpStatus.NOT_ACCEPTABLE);
+                                , HttpStatus.NOT_ACCEPTABLE);
             }
         }
         else{
-            responseEntity = new ResponseEntity<String>
+            LOGGER.error("Unable to process transaction, user does not exist");
+            responseEntity = new ResponseEntity<>
                     ("Unable to process transaction because User with user id: "
-                            +userId+" does not exist"
-                            ,HttpStatus.NO_CONTENT);
+                            + userId + " does not exist"
+                            , HttpStatus.NO_CONTENT);
         }
 
         return responseEntity;
@@ -181,18 +197,20 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> emptyCart(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<String> responseEntity;
         if(userService.isUserExists(userId)){
             result= userService.emptyCart(userId);
-            responseEntity = new ResponseEntity<String>
+            LOGGER.info("Cart successfully emptied");
+            responseEntity = new ResponseEntity<>
                     ("Cart successfully emptied"
-                            ,HttpStatus.OK);
+                            , HttpStatus.OK);
         }
         else{
-            responseEntity = new ResponseEntity<String>
+            LOGGER.error("User with userId: "+userId+" does not exist");
+            responseEntity = new ResponseEntity<>
                     ("Unable to process transaction because User with user id: "
-                            +userId+" does not exist"
-                            ,HttpStatus.NO_CONTENT);
+                            + userId + " does not exist"
+                            , HttpStatus.NO_CONTENT);
         }
         return responseEntity;
     }

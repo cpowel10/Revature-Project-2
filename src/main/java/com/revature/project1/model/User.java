@@ -1,6 +1,5 @@
 package com.revature.project1.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -38,7 +37,7 @@ public class User {
 
     @ElementCollection
     @CollectionTable(name="CartContents", joinColumns = @JoinColumn(name="user_id"))
-    private List<Item> cartContents = new ArrayList<Item>();
+    private List<Item> cartContents = new ArrayList<>();
 
     @Override
     public String toString() {

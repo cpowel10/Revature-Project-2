@@ -9,8 +9,6 @@ import com.revature.project1.model.Cart;
 import com.revature.project1.model.Item;
 import com.revature.project1.model.Order;
 import com.revature.project1.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,8 +21,6 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService{
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-
     @Autowired
     UserDao userDAO;
 
