@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -14,8 +15,9 @@ import javax.persistence.*;
 @Component
 @Entity
 @Embeddable
-@Table(name="item",schema="project1")
-public class Item {
+//@Table(name="item",schema="project1")
+@Table(name="item")
+public class Item implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int itemId;

@@ -4,14 +4,16 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
 @Entity
-@Table(name="cart",schema="project1")
-public class Cart {
+//@Table(name="cart",schema="project1")
+@Table(name="cart")
+public class Cart implements Serializable {
     @Id
     @Column(name="CART_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -5,6 +5,7 @@ import com.revature.project1.model.Item;
 import com.revature.project1.model.User;
 import com.revature.project1.utilities.CheckNumber;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,10 +53,10 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public String getAllInstockItems() {
-        List<Item> instock = itemDAO.getAllInStock();
+        List<Item> instock = itemDAO.getAllInStock(Sort.by("itemId"));
         String str = "";
         for(Item i : instock){
-            if(i.getUser() == null){
+            if(i.getUser() == null && i.getQoh() > 0){
                 str = str + i.getItemId()+": "+i.getItemName()+"-- price: $"+i.getPrice() + "\n";
             }
             else{

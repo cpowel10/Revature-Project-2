@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Component
 @Entity
-@Table(name="user",schema="project1")
-public class User {
+//@Table(name="user",schema="project1")
+@Table(name="users")
+public class User implements Serializable {
     @Id
     @Column(name="USER_ID")
     private int userId;

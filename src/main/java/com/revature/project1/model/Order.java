@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
 @Entity
-@Table(name="order",schema="project1")
-public class Order {
+//@Table(name="order",schema="project1")
+@Table(name="orders")
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int orderNumber;
