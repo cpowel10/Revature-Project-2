@@ -36,55 +36,55 @@ Spring Framework, SpringBoot, Spring Data JPA, AWS, Docker, Postgresql
 
 ## Project URLs: 
 ### UserController:
-1. **register user:** _localhost:8088/register_
+1. **register user:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/register_
     * requires requestBody
     * POST Mapping
-2. **update user info:** _localhost:8088/update_
+2. **update user info:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/update_
     * requires RequestBody
     * PUT Mapping
     * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
     * Must be signed in as user being updated
-3. **login:** _localhost:8088/login/{username}/{password}_
+3. **login:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/login/{username}/{password}_
     * Requires path variables
     * POST Mapping
-4. **logout** _localhost:8088/logout_
+4. **logout** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/logout_
     * does not require input
     * POST Mapping
     * logs out of current user
-5. **Get all users and their cart:** _localhost:8088/getusersandcarts_
+5. **Get all users and their cart:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/getusersandcarts_
     * Does not require input
     * GET Mapping
     * allowed roles - **ADMIN** only
-6. **Get current the users cart:** _localhost:8088/getmycart/{userid}_
+6. **Get current the users cart:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/getmycart/{userid}_
     * Requires 1 path variable
       * userId
     * GET Mapping
     * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
       * Must be signed in as user being access
-7. **Add Product to Cart** _localhost:8088/addproducttocart/{userid}/{itemId}_
+7. **Add Product to Cart** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/addproducttocart/{userid}/{itemId}_
     * Requires 2 path variables
       * userId
       * itemId
     * PUT Mapping
     * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
       * Must be signed in as user being access
-8. **Delete User:** _localhost:8088/deleteuser/{userid}_
+8. **Delete User:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/deleteuser/{userid}_
    * Requires 1 path variable
      * userId
    * DELETE Mapping
    * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
        * Must be signed in as user being access
-9. **Get All Items Instock:** _localhost:8088/getitemsinstock_
+9. **Get All Items Instock:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/getitemsinstock_
     * Does not require input
     * GET Mapping
-10. **Checkout:** _localhost:8088/checkout/{userid}_
+10. **Checkout:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/checkout/{userid}_
     * Requires 1 Path variable
       * userId
     * PUT Mapping
     * Will delete the item from table after checkout
     * allowed roles - ADMIN,CUSTOMER,EMPLOYEE
        * Must be signed in as user being access
-11. **Empty Cart** _localhost:8088/emptycart/{userid}_
+11. **Empty Cart** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/emptycart/{userid}_
     * Requires 1 Path variable
       * userId
     * PUT Mapping
@@ -93,16 +93,16 @@ Spring Framework, SpringBoot, Spring Data JPA, AWS, Docker, Postgresql
       * Must be signed in as user being access
 ---
 ### Item Controller:
-1. **Add Item** _localhost:8088/additem_
+1. **Add Item** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/additem_
     * requires RequestBody
     * POST Mapping
     * allowed roles - **ADMIN** only
-2. **Delete Item:** _localhost:8088/deleteitem/{itemid}_
+2. **Delete Item:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/deleteitem/{itemid}_
     * requires 1 Path variable
       * itemId
     * DELETE Mapping
     * allowed roles - **ADMIN** only
-3. **Update Item:** _localhost:8088/updateitem_
+3. **Update Item:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/updateitem_
     * requires RequestBody
     * PUT Mapping
     * allowed roles - **ADMIN** only
