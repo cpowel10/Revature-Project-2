@@ -70,10 +70,10 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(){
+    public ResponseEntity<String> logout(){
         userService.logout();
         LOGGER.info("Successfully logged out.");
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().body("Successfully logged out");
     }
 
     @GetMapping("/getusersandcarts")  //localhost:8088/getusersandcarts
