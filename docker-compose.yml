@@ -2,7 +2,8 @@ version: '2'
 
 services:
   product-app:
-    image: 'project1-chris-powell-1.0:latest'
+#    image: 'project1-chris-powell-1.0:latest'
+    image: 'actuator-practice:latest'
     build:    #reads DockerFile
       context: ./
     container_name: project1-chris-powell-1.0
