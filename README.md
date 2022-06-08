@@ -1,7 +1,7 @@
-# Revature-Project-1
+# Revature-Project-2
 ### Created by Chris Powell
 ## Description:
-This is my Revature Devops Project 1,
+This is my Revature Devops Project 2,
 which is the backend implementation of a shopping application, where a user can register, login and
 logout of their account, view what items are currently instock, view their cart contents and total
 price, add an item to their cart, and either checkout and see the total they were charged or 
