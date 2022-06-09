@@ -5,10 +5,9 @@ import com.revature.project1.dao.ItemDAO;
 import com.revature.project1.dao.OrderDao;
 import com.revature.project1.dao.UserDao;
 import com.revature.project1.exceptions.UserNotFoundException;
-import com.revature.project1.model.Cart;
-import com.revature.project1.model.Item;
-import com.revature.project1.model.Order;
-import com.revature.project1.model.User;
+import com.revature.project1.model.*;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,33 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private HttpServletRequest req;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    private Counter adminCounter;
+
+    private Counter employeeCounter;
+    private Counter customerCounter;
+
+    public UserServiceImpl(MeterRegistry meterRegistry){
+        this.meterRegistry = meterRegistry;
+    }
+
+    private void initUserCounter(){
+        adminCounter = Counter.builder("users")
+                .tag("role", "ADMIN")
+                .description("The number of ADMIN accounts registered")
+                .register(meterRegistry);
+        employeeCounter = Counter.builder("users")
+                .tag("role", "EMPLOYEE")
+                .description("The number of EMPLOYEE accounts registered")
+                .register(meterRegistry);
+        customerCounter = Counter.builder("users")
+                .tag("role", "CUSTOMER")
+                .description("The number of CUSTOMER accounts registered")
+                .register(meterRegistry);
+    }
+
     @Override
     public User register(User user) {
         if(userDAO.findByUsername(user.getUsername())==null){
@@ -43,6 +69,15 @@ public class UserServiceImpl implements UserService{
             Cart c = new Cart();
             o.setUserId(user.getUserId());
             c.setUserId(user.getUserId());
+            if(user.getRole() == Role.ADMIN){
+                adminCounter.increment(1.0);
+            }
+            else if(user.getRole() == Role.EMPLOYEE){
+                employeeCounter.increment(1.0);
+            }
+            else{
+                customerCounter.increment(1.0);
+            }
             userDAO.save(user);
             cartDAO.save(c);
             orderDAO.save(o);

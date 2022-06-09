@@ -2,6 +2,8 @@ package com.revature.project1.services;
 
 import com.revature.project1.dao.UserDao;
 import com.revature.project1.model.User;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -12,16 +14,17 @@ import java.util.List;
 
 @Component
 public class InfoService implements InfoContributor {
-    @Autowired
-    UserDao userDao;
-
+//    @Autowired
+//    private UserDao userDao;
+//
+//    private MeterRegistry meterRegistry;
+//
+//    public InfoService(MeterRegistry meterRegistry){
+//        this.meterRegistry = meterRegistry;
+//    }
+//
     @Override
     public void contribute(Info.Builder builder) {
-        HashMap<String,Integer> userCount = new HashMap<>();
-        List<User> users = userDao.findAll();
-        for(User u : users){
-            userCount.put(u.getFirstName(),u.getUserId());
-        }
-        builder.withDetail("userMetrics", userCount);
+        //Counter userCounter = this.meterRegistry.counter("users","role","ADMIN");
     }
 }
