@@ -6,13 +6,14 @@ import com.revature.project1.dao.OrderDao;
 import com.revature.project1.dao.UserDao;
 import com.revature.project1.exceptions.UserNotFoundException;
 import com.revature.project1.model.*;
-import io.micrometer.core.instrument.Counter;
+//import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.prometheus.client.Counter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -38,29 +39,18 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private MeterRegistry meterRegistry;
 
-    private Counter adminCounter;
-
-    private Counter employeeCounter;
-    private Counter customerCounter;
-
-    public UserServiceImpl(MeterRegistry meterRegistry){
-        this.meterRegistry = meterRegistry;
-    }
-
-    private void initUserCounter(){
-        adminCounter = Counter.builder("users")
-                .tag("role", "ADMIN")
-                .description("The number of ADMIN accounts registered")
-                .register(meterRegistry);
-        employeeCounter = Counter.builder("users")
-                .tag("role", "EMPLOYEE")
-                .description("The number of EMPLOYEE accounts registered")
-                .register(meterRegistry);
-        customerCounter = Counter.builder("users")
-                .tag("role", "CUSTOMER")
-                .description("The number of CUSTOMER accounts registered")
-                .register(meterRegistry);
-    }
+    static final Counter adminCounter = Counter.build()
+            .name("total_admin_users")
+            .help("Total number of ADMIN users created")
+            .register();
+    private Counter employeeCounter = Counter.build()
+            .name("total_employee_users")
+            .help("Total number of EMPLOYEE users created")
+            .register();
+    private Counter customerCounter = Counter.build()
+            .name("total_customers_users")
+            .help("Total number of CUSTOMER users created")
+            .register();
 
     @Override
     public User register(User user) {
@@ -70,13 +60,13 @@ public class UserServiceImpl implements UserService{
             o.setUserId(user.getUserId());
             c.setUserId(user.getUserId());
             if(user.getRole() == Role.ADMIN){
-                adminCounter.increment(1.0);
+                adminCounter.inc(1.0);
             }
             else if(user.getRole() == Role.EMPLOYEE){
-                employeeCounter.increment(1.0);
+                employeeCounter.inc(1.0);
             }
             else{
-                customerCounter.increment(1.0);
+                customerCounter.inc(1.0);
             }
             userDAO.save(user);
             cartDAO.save(c);
