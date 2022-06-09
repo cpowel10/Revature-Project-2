@@ -6,6 +6,7 @@ import com.revature.project1.model.User;
 import com.revature.project1.services.AuthorizationService;
 import com.revature.project1.services.ItemService;
 import com.revature.project1.services.UserService;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.prometheus.client.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +36,12 @@ public class UserController {
 
     boolean result;
 
-    static final Counter adminCounter = Counter.build()
-            .name("total_admin_users")
-            .help("Total number of ADMIN users created")
-            .register();
-    static final Counter employeeCounter = Counter.build()
-            .name("total_employee_users")
-            .help("Total number of EMPLOYEE users created")
-            .register();
-    static final Counter customerCounter = Counter.build()
-            .name("total_customers_users")
-            .help("Total number of CUSTOMER users created")
+    @Autowired
+    private static MeterRegistry meterRegistry;
+
+    static final Counter counter = Counter.build()
+            .name("total_request")
+            .help("Total number of requests")
             .register();
 
     @PostMapping("/register") //localhost:8088/register
@@ -61,15 +57,6 @@ public class UserController {
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
         }
         else{
-            if(user.getRole() == Role.ADMIN){
-                adminCounter.inc(1.0);
-            }
-            else if(user.getRole() == Role.EMPLOYEE){
-                employeeCounter.inc(1.0);
-            }
-            else{
-                customerCounter.inc(1.0);
-            }
             LOGGER.info("Successfully inserted "+user+" into User table");
             return ResponseEntity.accepted().body("Successfully registered user: "
                     +userService.register(user).toString());
@@ -89,6 +76,7 @@ public class UserController {
     public ResponseEntity<String> login(@PathVariable("user") String username, @PathVariable("pass") String password){
         User u = userService.login(username,password);
         LOGGER.info("Successfully logged in as "+user);
+        counter.inc();
         return new ResponseEntity<>("Welcome " + u.getFirstName() + " " + u.getLastName(), HttpStatus.OK);
     }
 
