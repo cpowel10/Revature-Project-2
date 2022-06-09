@@ -39,18 +39,18 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private MeterRegistry meterRegistry;
 
-    static final Counter adminCounter = Counter.build()
-            .name("total_admin_users")
-            .help("Total number of ADMIN users created")
-            .register();
-    private Counter employeeCounter = Counter.build()
-            .name("total_employee_users")
-            .help("Total number of EMPLOYEE users created")
-            .register();
-    private Counter customerCounter = Counter.build()
-            .name("total_customers_users")
-            .help("Total number of CUSTOMER users created")
-            .register();
+//    static final Counter adminCounter = Counter.build()
+//            .name("total_admin_users")
+//            .help("Total number of ADMIN users created")
+//            .register();
+//    static final Counter employeeCounter = Counter.build()
+//            .name("total_employee_users")
+//            .help("Total number of EMPLOYEE users created")
+//            .register();
+//    static final Counter customerCounter = Counter.build()
+//            .name("total_customers_users")
+//            .help("Total number of CUSTOMER users created")
+//            .register();
 
     @Override
     public User register(User user) {
@@ -59,15 +59,15 @@ public class UserServiceImpl implements UserService{
             Cart c = new Cart();
             o.setUserId(user.getUserId());
             c.setUserId(user.getUserId());
-            if(user.getRole() == Role.ADMIN){
-                adminCounter.inc(1.0);
-            }
-            else if(user.getRole() == Role.EMPLOYEE){
-                employeeCounter.inc(1.0);
-            }
-            else{
-                customerCounter.inc(1.0);
-            }
+//            if(user.getRole() == Role.ADMIN){
+//                adminCounter.inc(1.0);
+//            }
+//            else if(user.getRole() == Role.EMPLOYEE){
+//                employeeCounter.inc(1.0);
+//            }
+//            else{
+//                customerCounter.inc(1.0);
+//            }
             userDAO.save(user);
             cartDAO.save(c);
             orderDAO.save(o);

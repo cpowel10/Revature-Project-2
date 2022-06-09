@@ -6,6 +6,7 @@ import com.revature.project1.model.User;
 import com.revature.project1.services.AuthorizationService;
 import com.revature.project1.services.ItemService;
 import com.revature.project1.services.UserService;
+import io.prometheus.client.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,19 @@ public class UserController {
 
     boolean result;
 
+    static final Counter adminCounter = Counter.build()
+            .name("total_admin_users")
+            .help("Total number of ADMIN users created")
+            .register();
+    static final Counter employeeCounter = Counter.build()
+            .name("total_employee_users")
+            .help("Total number of EMPLOYEE users created")
+            .register();
+    static final Counter customerCounter = Counter.build()
+            .name("total_customers_users")
+            .help("Total number of CUSTOMER users created")
+            .register();
+
     @PostMapping("/register") //localhost:8088/register
     public ResponseEntity<String> register(@RequestBody User user){
         if(user == null){
@@ -47,6 +61,15 @@ public class UserController {
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
         }
         else{
+            if(user.getRole() == Role.ADMIN){
+                adminCounter.inc(1.0);
+            }
+            else if(user.getRole() == Role.EMPLOYEE){
+                employeeCounter.inc(1.0);
+            }
+            else{
+                customerCounter.inc(1.0);
+            }
             LOGGER.info("Successfully inserted "+user+" into User table");
             return ResponseEntity.accepted().body("Successfully registered user: "
                     +userService.register(user).toString());
