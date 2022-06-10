@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnablePrometheusEndpoint
+//@EnablePrometheusEndpoint
 public class Project1Application {
 
 	public static void main(String[] args) {
