@@ -6,6 +6,7 @@ import com.revature.project1.model.User;
 import com.revature.project1.services.AuthorizationService;
 import com.revature.project1.services.ItemService;
 import com.revature.project1.services.UserService;
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.prometheus.client.Counter;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class UserController {
             .help("Total number of requests")
             .register();
 
+    @Timed(value="time_to_register", description="Total time to complete the register request")
     @PostMapping("/register") //localhost:8088/register
     public ResponseEntity<String> register(@RequestBody User user){
         if(user == null){
@@ -63,6 +65,7 @@ public class UserController {
         }
     }
 
+    @Timed(value="time_to_update_user", description="Total time to complete the update request")
     @PutMapping("/update") //localhost:8088/update
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> updateUserInfo(@RequestBody User user){
@@ -72,6 +75,7 @@ public class UserController {
         return ResponseEntity.accepted().body("Successfully updated user: "+result.toString());
     }
 
+    @Timed(value="time_to_login", description="Total time to complete the login request")
     @PostMapping("/login/{user}/{pass}") //localhost:8088/login/user/pass
     public ResponseEntity<String> login(@PathVariable("user") String username, @PathVariable("pass") String password){
         User u = userService.login(username,password);
@@ -87,12 +91,14 @@ public class UserController {
         return ResponseEntity.accepted().body("Successfully logged out");
     }
 
+    @Timed(value="time_to_get_users_and_carts", description="Total time to complete the getUsersAndCarts request")
     @GetMapping("/getusersandcarts")  //localhost:8088/getusersandcarts
     @Authorized(allowedRoles = {Role.ADMIN})
     public ResponseEntity<String> getUsersAndCarts(){
         return ResponseEntity.ok(userService.getUsersAndCarts());
     }
 
+    @Timed(value="time_to_get_single_cart", description="Total time to complete the getMyCart http request")
     @GetMapping("/getmycart/{userid}")  // localhost:8088/getmycart/{userid}
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> getMyCart(@PathVariable("userid") int userId){
@@ -101,6 +107,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getSingleUserAndCart(userId));
     }
 
+    @Timed(value="time_to_add_product_to_cart", description="Total time to complete the addProductToCart request")
     @PutMapping("/addproducttocart/{userid}/{itemid}") //localhost:8088/addproducttocart/userid/itemId
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> addProductToCart(@PathVariable("userid") int userId,@PathVariable("itemid") int itemId ){
@@ -130,6 +137,7 @@ public class UserController {
         return responseEntity;
     }
 
+    @Timed(value="time_to_delete_user", description="Total time to complete the deleteUser request")
     @DeleteMapping("/deleteuser/{userid}") //localhost:8088/deleteuser/userid
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> deleteUser(@PathVariable("userid") int userId){
@@ -151,6 +159,7 @@ public class UserController {
         return responseEntity;
     }
 
+    @Timed(value="time_to_get_items_instock", description="Total time to complete the getItemsInstock request")
     @GetMapping("/getitemsinstock") //localhost:8088/getitemsinstock
     public ResponseEntity<String> getItemsInStock(){
         String items = itemService.getAllInstockItems();
@@ -165,6 +174,7 @@ public class UserController {
         }
     }
 
+    @Timed(value="time_to_ckeckout", description="Total time to complete the checkout request")
     @PutMapping("/checkout/{userid}") //localhost:8088/checkout/{userid}
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> checkout(@PathVariable("userid") int userId){
@@ -204,6 +214,7 @@ public class UserController {
         return responseEntity;
     }
 
+    @Timed(value="time_to_empty_cart", description="Total time to complete the emptyCart request")
     @PutMapping("/emptycart/{userid}") //localhost:8088/emptycart/{userid}
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> emptyCart(@PathVariable("userid") int userId){
