@@ -1,0 +1,10 @@
+groups:
+  - name: deleteuser
+    rules:
+      - alert: DeleteUserTookLongerThan1Second
+        expr: time_to_delete_user_max > 1.0
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent deleteuser request took too long"
+          description: "The most recent deleteuser request took more than 1 second. Something may be wrong with the application"

@@ -1,0 +1,10 @@
+groups:
+  - name: login
+    rules:
+      - alert: LoginTookLongerThan200ms
+        expr: time_to_login_max > 0.2
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent login request took too long"
+          description: "The most recent login request took more than 1 second. Something may be wrong with the application"

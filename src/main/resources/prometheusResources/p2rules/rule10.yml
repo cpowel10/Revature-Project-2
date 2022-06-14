@@ -1,0 +1,10 @@
+groups:
+  - name: emptycart
+    rules:
+      - alert: EmptyCartTookLongerThan800ms
+        expr: time_to_empty_cart_max > 0.8
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent emptycart request took too long"
+          description: "The most recent emptycart request took more than 1 second. Something may be wrong with the application"

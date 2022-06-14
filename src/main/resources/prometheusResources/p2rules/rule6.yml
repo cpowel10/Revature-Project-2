@@ -1,0 +1,10 @@
+groups:
+  - name: addtocart
+    rules:
+      - alert: AddToCartTookLongerThan300ms
+        expr: time_to_add_product_to_cart_max > 0.3
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent additemtocart request took too long"
+          description: "The most recent additemtocart request took more than 1 second. Something may be wrong with the application"

@@ -1,0 +1,10 @@
+groups:
+  - name: updateuser
+    rules:
+      - alert: UpdateUserTookLongerThan1Second
+        expr: time_to_update_user_max > 1.00
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent update user request took too long"
+          description: "The most recent update user request took more than 1 second. Something may be wrong with the application"

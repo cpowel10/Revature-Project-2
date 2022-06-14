@@ -1,0 +1,10 @@
+groups:
+  - name: getitemsinstock
+    rules:
+      - alert: GetItemsInstockTookLongerThan200ms
+        expr: time_to_get_items_instock_max > 0.2
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent getitemsinstock request took too long"
+          description: "The most recent getitemsinstock request took more than 1 second. Something may be wrong with the application"

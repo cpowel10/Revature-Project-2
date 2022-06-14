@@ -1,0 +1,10 @@
+groups:
+  - name: singlecart
+    rules:
+      - alert: SingleCartTookLongerThan200ms
+        expr: time_to_get_single_cart_max > 0.2
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent getsinglecart request took too long"
+          description: "The most recent getsinglecart request took more than 1 second. Something may be wrong with the application"

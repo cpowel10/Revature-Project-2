@@ -6,7 +6,16 @@ global:
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-  # - 'first_rules.yml'
+  - "p2rules/rule1.yml"
+  - "p2rules/rule2.yml"
+  - "p2rules/rule3.yml"
+  - "p2rules/rule4.yml"
+  - "p2rules/rule5.yml"
+  - "p2rules/rule6.yml"
+  - "p2rules/rule7.yml"
+  - "p2rules/rule8.yml"
+  - "p2rules/rule9.yml"
+  - "p2rules/rule10.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.

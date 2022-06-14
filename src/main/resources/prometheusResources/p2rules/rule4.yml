@@ -1,0 +1,10 @@
+groups:
+  - name: getusersandcarts
+    rules:
+      - alert: GetAllUsersAndCartsTookLongerThan200ms
+        expr: time_to_get_users_and_carts_max > 0.2
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent getusersandcarts request took too long"
+          description: "The most recent getusersandcarts request took more than 1 second. Something may be wrong with the application"

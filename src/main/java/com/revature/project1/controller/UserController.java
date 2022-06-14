@@ -174,7 +174,7 @@ public class UserController {
         }
     }
 
-    @Timed(value="time_to_ckeckout", description="Total time to complete the checkout request")
+    @Timed(value="time_to_checkout", description="Total time to complete the checkout request")
     @PutMapping("/checkout/{userid}") //localhost:8088/checkout/{userid}
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> checkout(@PathVariable("userid") int userId){

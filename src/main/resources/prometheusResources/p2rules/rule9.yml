@@ -1,0 +1,10 @@
+groups:
+  - name: checkout
+    rules:
+      - alert: CheckoutTookLongerThan500ms
+        expr: time_to_checkout_max > 0.5
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent checkout request took too long"
+          description: "The most recent checkout request took more than 1 second. Something may be wrong with the application"

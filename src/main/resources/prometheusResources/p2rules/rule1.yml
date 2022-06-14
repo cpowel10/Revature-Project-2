@@ -1,0 +1,10 @@
+groups:
+  - name: register
+    rules:
+      - alert: RegisterTookLongerThan1Second
+        expr: time_to_register_max > 1.00
+        labels:
+          severity: warning
+        annotations:
+          summary: "The most recent register request took too long"
+          description: "The most recent register request took more than 1 second. Something may be wrong with the application"
