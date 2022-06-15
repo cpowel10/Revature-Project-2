@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Component
 @Entity
-//@Table(name="user",schema="project1")
 @Table(name="users")
 public class User implements Serializable {
     @Id

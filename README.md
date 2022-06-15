@@ -1,44 +1,38 @@
 # Revature-Project-2
-### Created by Chris Powell
+### Created by Chris Powell, Jayden Rainsey, and Annette Reese
 ## Description:
 This is my Revature Devops Project 2,
 which is the backend implementation of a shopping application, where a user can register, login and
 logout of their account, view what items are currently instock, view their cart contents and total
 price, add an item to their cart, and either checkout and see the total they were charged or 
 empty their cart without being charged. ADMIN users can also add new items to the available stock,
-update the item information, or delete items from the database.
+update the item information, or delete items from the database. This project will be deployed using Jenkin to Docker
+to a Kubernetes cluster.
 ## Features Implemented:
-1. **Register:** Creates a new row in the User table from data provided by the user
-2. **Login:** Login as a user by providing the appropriate username and password
-3. **Logout:** Logout as current user
-4. **Get all customers and their cart contents:** Prints a list of all users and their 
-cart contents. Only usable by users with the Role ADMIN
-5. **Update user information:** Updates current user information (except for userId)
-with new information provided by the user. You must be logged in as the user
-getting updated.
-6. **Get current logged in user and their cart:** Get the name and cart contents of 
-current logged in user. Must be logged in as user whose info is being accessed 
-7. **Add product to cart:** Add a product to the current user's cart. and removes that
-item from the available items instock.
-8. **Delete users:** Delete current logged in user.
-9. **Get all items in stock:** Prints all items currently instock
-10. **Checkout:** Proceeds to remove the items from the current user's cart,
-and deletes the items from the item table. User must have a credit card number
-on their account to checkout.
-11. **Empty Cart:** Empties current user's cart without charging them and makes the items 
-available for other users to add to their carts
-12. **Add Item:** Adds an item to the item table. Only usable by ADMIN users
-13. **Delete Item:** Deletes an item from the item table. Only usable by ADMIN users
-14. **Update Item:** Updates the information about an item. Only usable by ADMIN users
+1. A @Bean method in Project1Application.java called timedAspect to record custom metrics
+2. @Timed annotations over most of the methods in UserController that will record the time it 
+takes for each method to run
+3. A prometheus.yml file with rules for alerting based on the custom metrics created
+4. A directory called Kubernetesfiles which contains the p2-deployment.yml file needed to deploy the 
+application in Kubernetes
+
+## Roles
+1. Chris:
+   1. 
+2. Jayden:
+   1. 
+3. Annette:
+   1. 
 
 ## Technologies Used:
-Spring Framework, SpringBoot, Spring Data JPA, AWS, Docker, Postgresql 
+Grafana, Prometheus, Kubernetes, Jenkins, Minikube 
 
 ## Project URLs: 
 ### UserController:
 1. **register user:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/register_
     * requires requestBody
     * POST Mapping
+    * Timed custom metric time_to_register 
 2. **update user info:** _http://ec2-3-95-55-213.compute-1.amazonaws.com:8088/update_
     * requires RequestBody
     * PUT Mapping
