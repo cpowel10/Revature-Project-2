@@ -6,8 +6,9 @@ which is the backend implementation of a shopping application, where a user can 
 logout of their account, view what items are currently instock, view their cart contents and total
 price, add an item to their cart, and either checkout and see the total they were charged or 
 empty their cart without being charged. ADMIN users can also add new items to the available stock,
-update the item information, or delete items from the database. This project will be deployed using Jenkin to Docker
-to a Kubernetes cluster.
+update the item information, or delete items from the database. Project 2 will take the Project 1 application 
+and deploy it using Jenkins to build and push the Docker image then that Docker image will be used to deploy the application 
+in a Kubernetes cluster.
 ## Features Implemented:
 1. A @Bean method in Project1Application.java called timedAspect to record custom metrics
 2. @Timed annotations over most of the methods in UserController that will record the time it 
@@ -18,14 +19,18 @@ application in Kubernetes
 
 ## Roles
 1. Chris:
-   1. 
+   1. Set up Jenkins Pipeline with custom Dockerfile and Jenkinsfile
+   2. Wrote Custom metrics using micrometer
+   3. Created custom alert rules in Prometheus
 2. Jayden:
-   1. 
+   1. Wrote the SLO
+   2. Defined custom recording and reporting rules based on the SLO
+   3. Helped create the Grafana dashboard
 3. Annette:
-   1. 
+   1. Helped create the Grafana dashboard
 
 ## Technologies Used:
-Grafana, Prometheus, Kubernetes, Jenkins, Minikube 
+Grafana, Prometheus, Kubernetes, Jenkins, Minikube, Kubectl, Micrometer 
 
 ## Project URLs: 
 ### UserController:
