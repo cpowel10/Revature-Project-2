@@ -1,16 +1,16 @@
 global:
-  slack_api_url: 'https://hooks.slack.com/services/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'
+ resolve_timeout: 1m
+
 route:
-  group_by: ['alertname']
-  group_wait: 5s
-  group_interval: 1m
-  repeat_interval: 20m
-  receiver: 'slack'
+ receiver: 'email-notifications'
 
 receivers:
-- name: 'slack'
-  slack_configs:
-  - channel: '#my-alerts'
-    icon_emoji: ':bell:'
+- name: 'email-notifications'
+  email_configs:
+  - to: chrispowell1129@gmail.com
+    from: chrispowell112995@gmail.com
+    smarthost: smtp.gmail.com:587
+    auth_username: chrispowell112995@gmail.com
+    auth_identity: chrispowell112995@gmail.com
+    auth_password: ywpbyirrnajzeeln
     send_resolved: true
-    text: "<!channel> \nsummary: {{ .CommonAnnotations.summary }}\ndescription: {{ .CommonAnnotations.description }}\nmessage: {{ .CommonAnnotations.message }}"
