@@ -6,7 +6,6 @@ import com.revature.project1.dao.OrderDao;
 import com.revature.project1.dao.UserDao;
 import com.revature.project1.exceptions.UserNotFoundException;
 import com.revature.project1.model.*;
-//import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -36,22 +35,6 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private HttpServletRequest req;
 
-    @Autowired
-    private MeterRegistry meterRegistry;
-
-//    static final Counter adminCounter = Counter.build()
-//            .name("total_admin_users")
-//            .help("Total number of ADMIN users created")
-//            .register();
-//    static final Counter employeeCounter = Counter.build()
-//            .name("total_employee_users")
-//            .help("Total number of EMPLOYEE users created")
-//            .register();
-//    static final Counter customerCounter = Counter.build()
-//            .name("total_customers_users")
-//            .help("Total number of CUSTOMER users created")
-//            .register();
-
     @Override
     public User register(User user) {
         if(userDAO.findByUsername(user.getUsername())==null){
@@ -59,15 +42,6 @@ public class UserServiceImpl implements UserService{
             Cart c = new Cart();
             o.setUserId(user.getUserId());
             c.setUserId(user.getUserId());
-//            if(user.getRole() == Role.ADMIN){
-//                adminCounter.inc(1.0);
-//            }
-//            else if(user.getRole() == Role.EMPLOYEE){
-//                employeeCounter.inc(1.0);
-//            }
-//            else{
-//                customerCounter.inc(1.0);
-//            }
             userDAO.save(user);
             cartDAO.save(c);
             orderDAO.save(o);

@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Component
 @Entity
 @Embeddable
-//@Table(name="item",schema="project1")
 @Table(name="item")
 public class Item implements Serializable {
     @Id

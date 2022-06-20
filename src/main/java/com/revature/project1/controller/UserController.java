@@ -59,7 +59,7 @@ public class UserController {
                             + user.getUserId() + " already exists", HttpStatus.CONFLICT);   //409
         }
         else{
-            LOGGER.info("Successfully inserted "+user+" into User table");
+            LOGGER.info(String.format("Successfully inserted %s %s: username: %s into User table",user.getFirstName(),user.getLastName(),user.getUsername()));
             return ResponseEntity.accepted().body("Successfully registered user: "
                     +userService.register(user).toString());
         }
@@ -70,16 +70,16 @@ public class UserController {
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> updateUserInfo(@RequestBody User user){
         authorizationService.guardByUserId(user.getUserId());
-        User result = userService.update(user);
-        LOGGER.info("Successfully updated "+user);
-        return ResponseEntity.accepted().body("Successfully updated user: "+result.toString());
+        User u = userService.update(user);
+        LOGGER.info(String.format("Successfully updated user: %s",user.getUsername()));
+        return ResponseEntity.accepted().body("Successfully updated user: "+u.toString());
     }
 
     @Timed(value="time_to_login", description="Total time to complete the login request")
     @PostMapping("/login/{user}/{pass}") //localhost:8088/login/user/pass
     public ResponseEntity<String> login(@PathVariable("user") String username, @PathVariable("pass") String password){
         User u = userService.login(username,password);
-        LOGGER.info("Successfully logged in as "+user);
+        LOGGER.info(String.format("Successfully logged in as user: %s",user.getUsername()));
         counter.inc();
         return new ResponseEntity<>("Welcome " + u.getFirstName() + " " + u.getLastName(), HttpStatus.OK);
     }
@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @Timed(value="time_to_get_single_cart", description="Total time to complete the getMyCart http request")
-    @GetMapping("/getmycart/{userid}")  // localhost:8088/getmycart/{userid}
+    @GetMapping("/getmycart/{userid}")  // localhost:8088/getmycart/userid
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> getMyCart(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
@@ -145,7 +145,7 @@ public class UserController {
         ResponseEntity<String> responseEntity;
         if(userService.isUserExists(userId)){
             result = userService.deleteAccount(userId);
-            LOGGER.info("Successfully deleted user with userId: "+userId);
+            LOGGER.info(String.format("Successfully deleted user with userId: %d",userId));
             responseEntity = new ResponseEntity<>
                     ("Successfully deleted user", HttpStatus.OK);
         }
@@ -175,7 +175,7 @@ public class UserController {
     }
 
     @Timed(value="time_to_checkout", description="Total time to complete the checkout request")
-    @PutMapping("/checkout/{userid}") //localhost:8088/checkout/{userid}
+    @PutMapping("/checkout/{userid}") //localhost:8088/checkout/userid
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> checkout(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
@@ -215,7 +215,7 @@ public class UserController {
     }
 
     @Timed(value="time_to_empty_cart", description="Total time to complete the emptyCart request")
-    @PutMapping("/emptycart/{userid}") //localhost:8088/emptycart/{userid}
+    @PutMapping("/emptycart/{userid}") //localhost:8088/emptycart/userid
     @Authorized(allowedRoles = {Role.ADMIN,Role.CUSTOMER,Role.EMPLOYEE})
     public ResponseEntity<String> emptyCart(@PathVariable("userid") int userId){
         authorizationService.guardByUserId(userId);
@@ -228,7 +228,7 @@ public class UserController {
                             , HttpStatus.OK);
         }
         else{
-            LOGGER.error("User with userId: "+userId+" does not exist");
+            LOGGER.error(String.format("User with userId: %d does not exist",userId));
             responseEntity = new ResponseEntity<>
                     ("Unable to process transaction because User with user id: "
                             + userId + " does not exist"
